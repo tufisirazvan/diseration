@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: jboss/keycloak:11.0.3
+    entrypoint: ["/opt/jboss/tools/docker-entrypoint.sh", "-b", "0.0.0.0"]
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,address=*:8787,server=y,suspend=n -Xms64m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Dkeycloak.profile.feature.impersonation=disabled
+    ports:
+      - 8888:8080
+      - 8787:8787
