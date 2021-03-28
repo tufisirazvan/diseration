@@ -1,15 +1,13 @@
 package com.example.keycloak.services;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.security.RolesAllowed;
-
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/api/test")
 public class TestController {
 
     @RequestMapping(value = "/anonymous", method = RequestMethod.GET)
@@ -17,21 +15,21 @@ public class TestController {
         return ResponseEntity.ok("Hello Anonymous");
     }
 
-    @RolesAllowed("user")
+    @Secured({"ROLE_user"})
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public ResponseEntity<String> getUser(@RequestHeader String Authorization) {
+    public ResponseEntity<String> getUser() {
         return ResponseEntity.ok("Hello User");
     }
 
-    @RolesAllowed("admin")
+    @Secured({"ROLE_admin"})
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
-    public ResponseEntity<String> getAdmin(@RequestHeader String Authorization) {
+    public ResponseEntity<String> getAdmin() {
         return ResponseEntity.ok("Hello Admin");
     }
 
-    @RolesAllowed({"coco"})
+    @Secured({"ROLE_admin"})
     @RequestMapping(value = "/all-user", method = RequestMethod.GET)
-    public ResponseEntity<String> getAllUser(@RequestHeader String Authorization) {
+    public ResponseEntity<String> getAllUser() {
         return ResponseEntity.ok("Hello All User");
     }
 }

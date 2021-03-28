@@ -3,7 +3,7 @@ version: '3.8'
 services:
   keycloak:
     image: jboss/keycloak:11.0.3
-    entrypoint: ["/opt/jboss/tools/docker-entrypoint.sh", "-b", "0.0.0.0"]
+    entrypoint: ["/opt/jboss/tools/docker-entrypoint.sh", "-b", "0.0.0.0", "-Dkeycloak.import=/opt/jboss/keycloak/standalone/data/backup_restore/demo-realm.json", "-Dkeycloak.migration.strategy=IGNORE_EXISTING"]
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
@@ -11,3 +11,7 @@ services:
     ports:
       - 8888:8080
       - 8787:8787
+    volumes:
+       - ./docker/backup_restore/:/opt/jboss/keycloak/standalone/data/backup_restore/
+       - ./docker/customizations/:/opt/jboss/keycloak/standalone/deployments/
+    restart: always
