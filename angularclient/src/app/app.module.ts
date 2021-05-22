@@ -42,37 +42,37 @@ export class AppModule {
 export function applicationInitializerFactory(oauthService: OAuthService) {
   return () => new Promise<boolean>(resolve => {
 
-    configure(oauthService);
+    configure();
     oauthService.setupAutomaticSilentRefresh();
 
     // Load Discovery Document and then try to login the user
     oauthService.loadDiscoveryDocument().then(() =>
-      checkIdentification().subscribe(() => resolve(true))
+      checkIdentity().subscribe(() => resolve(true))
     );
-  });
 
-  function checkIdentification(): Observable<boolean> {
-    if (isDefined(oauthService.getRefreshToken())) {
-      return from(oauthService.refreshToken()).pipe(map(() => oauthService.hasValidAccessToken()));
+    function checkIdentity(): Observable<boolean> {
+      if (isDefined(oauthService.getRefreshToken())) {
+        return from(oauthService.refreshToken()).pipe(map(() => oauthService.hasValidAccessToken()));
+      }
+
+      return from(oauthService.tryLogin())
     }
 
-    return from(oauthService.tryLogin())
-  }
-
-  function configure(oauthService: OAuthService) {
-    // URL of the SPA to redirect the user to after login
-    oauthService.redirectUri = window.location.origin;
-    //oauthService.postLogoutRedirectUri = window.location.origin;
-    // The SPA's id. The SPA is registerd with this id at the auth-server
-    oauthService.clientId = "demo-spa";
-    // set the scope for the permissions the client should request
-    // The first three are defined by OIDC. The 4th is a usecase-specific one
-    oauthService.scope = "openid profile email roles";
-    // set to true, to receive also an id_token via OpenId Connect (OIDC) in addition to the
-    // OAuth2-based access_token
-    oauthService.issuer = 'http://localhost:8888/auth/realms/demo-realm'; // ID_Token
-    oauthService.disablePKCE = true;
-    oauthService.responseType = 'code';
-    oauthService.showDebugInformation = true;
-  }
+    function configure() {
+      oauthService.configure({
+        // URL of the SPA to redirect the user to after login
+        redirectUri: window.location.origin,
+        // The SPA's id. The SPA is registered with this id at the auth-server
+        clientId: "demo-spa",
+        // set the scope for the permissions the client should request
+        scope: "openid profile email roles",
+        // url for  /.well-known/openid-configuration endpoint
+        issuer: 'http://localhost:8888/auth/realms/demo-realm', // ID_Token
+        disablePKCE: true,
+        //initialize the code flow
+        responseType: 'code',
+        showDebugInformation: true
+      })
+    }
+  });
 }
