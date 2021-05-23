@@ -13,6 +13,10 @@ const routes: Routes = [
     path: 'main',
     canActivate: [AuthGuard],
     component: MainpageComponent
+  },
+  {
+    path: 'public',
+    component: MainpageComponent
   }
 ];
 
